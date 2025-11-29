@@ -1,8 +1,7 @@
-{ ... }:
+{ config, ... }:
 let
   home = {
-    username = "notthebee";
-    homeDirectory = "/home/notthebee";
+    inherit (config.home) username homeDirectory;
     stateVersion = "23.11";
   };
 in

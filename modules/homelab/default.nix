@@ -54,18 +54,12 @@ in
         Time zone to be used for the homelab services
       '';
     };
-    baseDomain = lib.mkOption {
-      default = "";
-      type = lib.types.str;
-      description = ''
-        Base domain name to be used to access the homelab services via Caddy reverse proxy
-      '';
-    };
     cloudflare.dnsCredentialsFile = lib.mkOption {
       type = lib.types.path;
     };
   };
   imports = [
+    ../nixos/homelab/options.nix
     ./backup
     ./services
     ./samba

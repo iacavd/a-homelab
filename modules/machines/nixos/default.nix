@@ -7,20 +7,27 @@ let
   entries = builtins.attrNames (builtins.readDir ./.);
   configs = builtins.filter (dir: builtins.pathExists (./. + "/${dir}/configuration.nix")) entries;
   homeManagerCfg = userPackages: extraImports: {
-    home-manager.useGlobalPkgs = false;
-    home-manager.extraSpecialArgs = {
-      inherit (self) inputs;
+    config,
+    ...
+  }:
+    let
+      mainUser = config.homelab.mainUser;
+    in {
+      home-manager.useGlobalPkgs = false;
+      home-manager.extraSpecialArgs = {
+        inherit (self) inputs;
+        inherit mainUser;
+      };
+      home-manager.users.${mainUser}.imports = [
+        self.inputs.agenix.homeManagerModules.default
+        self.inputs.nix-index-database.homeModules.nix-index
+        ../../users/notthebee/dots.nix
+        ../../users/notthebee/age.nix
+      ]
+      ++ extraImports;
+      home-manager.backupFileExtension = "bak";
+      home-manager.useUserPackages = userPackages;
     };
-    home-manager.users.notthebee.imports = [
-      self.inputs.agenix.homeManagerModules.default
-      self.inputs.nix-index-database.homeModules.nix-index
-      ../../users/notthebee/dots.nix
-      ../../users/notthebee/age.nix
-    ]
-    ++ extraImports;
-    home-manager.backupFileExtension = "bak";
-    home-manager.useUserPackages = userPackages;
-  };
 in
 {
 
@@ -45,23 +52,25 @@ in
               };
             };
 
-            modules = [
-              ../../homelab
-              ../../misc/email
-              ../../misc/tg-notify
-              ../../misc/mover
-              ../../misc/withings2intervals
-              self.inputs.agenix.nixosModules.default
-              self.inputs.adios-bot.nixosModules.default
-              self.inputs.autoaspm.nixosModules.default
-              self.inputs."home-manager${
-                lib.attrsets.attrByPath [ name ] "" nixpkgsMap
-              }".nixosModules.home-manager
-              (./. + "/_common/default.nix")
-              (./. + "/${name}/configuration.nix")
-              ../../users/notthebee
-              (homeManagerCfg false [ ])
-            ];
+            modules =
+              [
+                ../../homelab
+                ../../misc/email
+                ../../misc/tg-notify
+                ../../misc/mover
+                ../../misc/withings2intervals
+                self.inputs.agenix.nixosModules.default
+                self.inputs.adios-bot.nixosModules.default
+                self.inputs.autoaspm.nixosModules.default
+                self.inputs."home-manager${
+                  lib.attrsets.attrByPath [ name ] "" nixpkgsMap
+                }".nixosModules.home-manager
+                (./. + "/_common/default.nix")
+                (./. + "/${name}/configuration.nix")
+                ../../users/notthebee
+                (homeManagerCfg false [ ])
+              ]
+              ++ lib.optional (name == "emily") self.inputs.sops-nix.nixosModules.sops;
           }
         )
       ) configs

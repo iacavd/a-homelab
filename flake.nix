@@ -57,6 +57,9 @@
       url = "github:Mic92/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+    };
     secrets = {
       url = "git+ssh://git@github.com/notthebee/nix-private.git";
       flake = false;

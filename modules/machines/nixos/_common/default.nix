@@ -5,7 +5,10 @@
   lib,
   ...
 }:
-{
+let
+  mainUser = config.homelab.mainUser;
+  mediaGroup = config.homelab.mediaGroup;
+in {
 
   programs.ssh = {
     knownHosts = {
@@ -40,6 +43,7 @@
   };
 
   imports = [
+    ../../../nixos/homelab/options.nix
     ./filesystems
     ./nix
     ./monitoring
@@ -49,7 +53,7 @@
   time.timeZone = "Europe/Berlin";
 
   users.users = {
-    notthebee = {
+    ${mainUser} = {
       hashedPasswordFile = config.age.secrets.hashedUserPassword.path;
     };
     root = {
@@ -96,8 +100,8 @@
       hashedUserPassword.file = "${inputs.secrets}/hashedUserPassword.age";
       smtpPassword = {
         file = "${inputs.secrets}/smtpPassword.age";
-        owner = "notthebee";
-        group = "notthebee";
+        owner = mainUser;
+        group = mainUser;
         mode = "0440";
       };
     };
