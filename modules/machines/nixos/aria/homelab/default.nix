@@ -1,12 +1,14 @@
 { config, ... }:
 let
   hl = config.homelab;
+  baseDomain = config.homelab.baseDomain;
+  derivedBaseDomain = "aria.${baseDomain}";
 in
 {
   homelab = {
     enable = true;
     cloudflare.dnsCredentialsFile = config.age.secrets.cloudflareDnsApiCredentials.path;
-    baseDomain = "aria.goose.party";
+    baseDomain = derivedBaseDomain;
     timeZone = "Europe/Berlin";
     mounts = {
       slow = "/mnt/mergerfs_slow";

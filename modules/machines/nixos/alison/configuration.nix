@@ -4,6 +4,9 @@
   lib,
   ...
 }:
+let
+  baseDomain = config.homelab.baseDomain;
+in
 {
   boot.kernelModules = [
     "i915"
@@ -52,7 +55,7 @@
   homelab = {
     enable = true;
     cloudflare.dnsCredentialsFile = config.age.secrets.cloudflareDnsApiCredentials.path;
-    baseDomain = "goose.party";
+    baseDomain = baseDomain;
     timeZone = "Europe/Berlin";
     mounts = {
       config = "/persist/opt/services";

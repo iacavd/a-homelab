@@ -17,7 +17,8 @@
 
     extraConfig = {
       core = {
-        sshCommand = "ssh -o 'IdentitiesOnly=yes' -i ~/.ssh/notthebee";
+        sshCommand =
+          "ssh -o 'IdentitiesOnly=yes' -i ${config.home.homeDirectory}/.ssh/${config.home.username}";
       };
     };
     includes = [

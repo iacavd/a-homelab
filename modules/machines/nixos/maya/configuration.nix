@@ -9,6 +9,7 @@ let
   iot = config.homelab.networks.local.iot.reservations;
   tvIpAddress = iot.lgtv.Address;
   tvMacAddress = iot.lgtv.MACAddress;
+  mainUser = config.homelab.mainUser;
 in
 {
   imports = [
@@ -55,8 +56,8 @@ in
       enable = true;
       ipAddress = tvIpAddress;
       macAddress = tvMacAddress;
-      user = "notthebee";
-      group = "notthebee";
+      user = mainUser;
+      group = mainUser;
     };
     ryzen-undervolting = {
       enable = true;
@@ -82,7 +83,7 @@ in
       updater.splash = "vendor";
       enable = true;
       autoStart = true;
-      user = "notthebee";
+      user = mainUser;
       desktopSession = "plasma";
     };
     steamos = {

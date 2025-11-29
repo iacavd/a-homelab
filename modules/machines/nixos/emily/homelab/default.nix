@@ -9,6 +9,8 @@ let
   wg = config.homelab.networks.external.spencer-wireguard;
   wgBase = lib.strings.removeSuffix ".1" wg.gateway;
   hl = config.homelab;
+  baseDomain = config.homelab.baseDomain;
+  mainUser = config.homelab.mainUser;
 in
 {
   services.fail2ban-cloudflare = {
@@ -19,7 +21,7 @@ in
   };
   homelab = {
     enable = true;
-    baseDomain = "goose.party";
+    baseDomain = baseDomain;
     cloudflare.dnsCredentialsFile = config.age.secrets.cloudflareDnsApiCredentials.path;
     timeZone = "Europe/Berlin";
     mounts = {
@@ -117,7 +119,7 @@ in
           }
           {
             "Immich (Parents)" = {
-              href = "https://photos.aria.goose.party";
+              href = "https://photos.aria.${baseDomain}";
               description = "Self-hosted photo and video management solution";
               icon = "immich.svg";
               siteMonitor = "";
@@ -142,8 +144,8 @@ in
       nextcloud = {
         enable = true;
         admin = {
-          username = "notthebee";
-          passwordFile = config.age.secrets.nextcloudAdminPassword.path;
+          username = mainUser;
+          passwordFile = config.sops.secrets.nextcloud-admin-pass.path;
         };
         cloudflared = {
           tunnelId = "cc246d42-a03d-41d4-97e2-48aa15d47297";
@@ -170,7 +172,7 @@ in
           tunnelId = "9b2cac61-a439-4b1f-a979-f8519ea00e58";
           credentialsFile = config.age.secrets.minifluxCloudflared.path;
         };
-        adminCredentialsFile = config.age.secrets.minifluxAdminPassword.path;
+        adminCredentialsFile = config.sops.secrets.miniflux-admin.path;
       };
       navidrome = {
         enable = true;

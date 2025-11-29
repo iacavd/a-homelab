@@ -5,6 +5,9 @@
   ...
 }:
 let
+  mainUser = config.homelab.mainUser;
+  baseDomain = config.homelab.baseDomain;
+  mediaGroup = config.homelab.mediaGroup;
   hl = config.homelab;
   lan = hl.networks.local.lan;
   emilyIpAddress = lan.reservations.emily.Address;
@@ -111,12 +114,14 @@ in
     };
   };
   imports = [
+    ../../../nixos/homelab/options.nix
     ../../../misc/tailscale
     ../../../misc/zfs-root
     ../../../misc/agenix
     ./filesystems
     ./backup
     ./homelab
+    ./secrets.nix
     ./secrets
   ];
 
