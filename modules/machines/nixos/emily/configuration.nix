@@ -2,9 +2,13 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
+  varsFile = inputs.secrets + "/emily-variables.nix";
+  _ = lib.assertMsg (builtins.pathExists varsFile) "Missing emily-variables.nix in secrets input";
+  vars = import varsFile;
   mainUser = config.homelab.mainUser;
   baseDomain = config.homelab.baseDomain;
   mediaGroup = config.homelab.mediaGroup;
@@ -21,11 +25,11 @@ let
 in
 {
   services.prometheus.exporters.shellyplug.targets = [
-    "192.168.32.4"
+    vars.network.shellyplugIp
   ];
   services.udev.extraRules = ''
-    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="68:05:ca:39:92:d8", ATTR{type}=="1", NAME="lan0"
-    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="68:05:ca:39:92:d9", ATTR{type}=="1", NAME="lan1"
+    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="${vars.network.macs.lan0}", ATTR{type}=="1", NAME="lan0"
+    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="${vars.network.macs.lan1}", ATTR{type}=="1", NAME="lan1"
   '';
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };

@@ -6,6 +6,9 @@
   ...
 }:
 let
+  varsFile = inputs.secrets + "/emily-variables.nix";
+  _ = lib.assertMsg (builtins.pathExists varsFile) "Missing emily-variables.nix in secrets input";
+  vars = import varsFile;
   wg = config.homelab.networks.external.spencer-wireguard;
   wgBase = lib.strings.removeSuffix ".1" wg.gateway;
   hl = config.homelab;
@@ -16,7 +19,7 @@ in
   services.fail2ban-cloudflare = {
     enable = true;
     apiKeyFile = config.age.secrets.cloudflareFirewallApiKey.path;
-    zoneId = "5a125e72bca5869bfb929db157d89d96";
+    zoneId = vars.cloudflare.zoneId;
 
   };
   homelab = {
@@ -79,7 +82,7 @@ in
         enable = true;
         dbPasswordFile = config.age.secrets.keycloakDbPasswordFile.path;
         cloudflared = {
-          tunnelId = "06b27fd2-4cb9-42e5-9d79-f4c4c44ca0c6";
+          tunnelId = vars.cloudflare.tunnels.keycloak;
           credentialsFile = config.age.secrets.keycloakCloudflared.path;
         };
       };
@@ -148,28 +151,28 @@ in
           passwordFile = config.sops.secrets.nextcloud-admin-pass.path;
         };
         cloudflared = {
-          tunnelId = "cc246d42-a03d-41d4-97e2-48aa15d47297";
+          tunnelId = vars.cloudflare.tunnels.nextcloud;
           credentialsFile = config.age.secrets.nextcloudCloudflared.path;
         };
       };
       vaultwarden = {
         enable = true;
         cloudflared = {
-          tunnelId = "3bcbbc74-3667-4504-9258-f272ce006a18";
+          tunnelId = vars.cloudflare.tunnels.vaultwarden;
           credentialsFile = config.age.secrets.vaultwardenCloudflared.path;
         };
       };
       microbin = {
         enable = true;
         cloudflared = {
-          tunnelId = "216d72b6-6b2b-412f-90bc-1a44c1264871";
+          tunnelId = vars.cloudflare.tunnels.microbin;
           credentialsFile = config.age.secrets.microbinCloudflared.path;
         };
       };
       miniflux = {
         enable = true;
         cloudflared = {
-          tunnelId = "9b2cac61-a439-4b1f-a979-f8519ea00e58";
+          tunnelId = vars.cloudflare.tunnels.miniflux;
           credentialsFile = config.age.secrets.minifluxCloudflared.path;
         };
         adminCredentialsFile = config.sops.secrets.miniflux-admin.path;
@@ -178,7 +181,7 @@ in
         enable = true;
         environmentFile = config.age.secrets.navidromeEnv.path;
         cloudflared = {
-          tunnelId = "dc669277-8528-4a25-bacb-b844a262de17";
+          tunnelId = vars.cloudflare.tunnels.navidrome;
           credentialsFile = config.age.secrets.navidromeCloudflared.path;
         };
       };
